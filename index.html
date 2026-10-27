@@ -30,7 +30,49 @@ input,select{width:100%;padding:12px 13px;border:1px solid #b39a70;border-radius
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}th,td{padding:13px 17px;text-align:left;border-bottom:1px solid rgba(255,255,255,.07)}th{color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-size:10px}td strong{color:var(--gold-light)}tr:last-child td{border-bottom:none}
 .admin-tools{padding:23px;margin-top:28px;border:1px solid var(--border);background:var(--panel)}.admin-tools p{font-size:12px;color:var(--muted);line-height:1.7}.admin-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}.admin-form label{margin-top:0}.admin-form .btn{padding:12px}
 .notice{padding:12px 14px;margin-top:15px;font-size:12px;line-height:1.6;border:1px solid var(--border);background:rgba(0,0,0,.15);color:var(--muted)}.notice.error{color:#ffb6a0;border-color:var(--red)}.notice.success{color:var(--green)}
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.admin-box{border:1px solid var(--border);padding:18px;background:rgba(0,0,0,.12)}.admin-box h3{color:var(--gold-light)}.admin-box .btn{margin-top:14px}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.category-rankings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.ranking-box {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.ranking-box h3 {
+  color: var(--gold-light);
+  margin: 0;
+}
+
+.ranking-box .leaderboard-head {
+  padding: 18px;
+}
+
+.ranking-box table {
+  min-width: 0;
+}
+
+.ranking-box th,
+.ranking-box td {
+  padding: 11px 12px;
+}
+
+.ranking-box .rank-number {
+  color: var(--gold-light);
+  font-weight: 800;
+}
+
+@media(max-width:720px) {
+  .category-rankings {
+    grid-template-columns: 1fr;
+  }
+}
+.admin-box{border:1px solid var(--border);padding:18px;background:rgba(0,0,0,.12)}.admin-box h3{color:var(--gold-light)}.admin-box .btn{margin-top:14px}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-top:55px}.status{font-size:12px;color:var(--muted);line-height:1.7}
 @media(max-width:720px){.login-layout{grid-template-columns:1fr;gap:20px}.poster{padding:15px}.poster .wanted{font-size:45px}.balance-grid{grid-template-columns:1fr;gap:10px}.stat{padding:16px}.stat .value{font-size:31px}.category-grid{grid-template-columns:1fr}.dashboard-header{flex-direction:column}.admin-form,.admin-grid,.inline-fields{grid-template-columns:1fr}.topbar{padding:15px}.brand{font-size:20px}main{padding-top:25px}.login-card{padding:22px}}
 </style>
@@ -123,6 +165,16 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
           <p>Nový hráč musí mít účet ve Firebase Authentication a jeho UID musí být vloženo do formuláře vlevo nahoře. Samotné vytvoření profilu nevytváří přihlašovací účet.</p>
         </div>
       </div>
+	        <div class="divider"></div>
+
+      <div class="eyebrow">Rozhoduje každý bod</div>
+      <h2>Pořadí v jednotlivých kategoriích</h2>
+      <p>
+        Aktuální pořadí všech hráčů podle jejich investic.
+        Údaje se automaticky aktualizují podle databáze.
+      </p>
+
+      <div id="categoryRankings" class="category-rankings"></div>
       <div id="adminMessage" class="notice">Administrátorské nástroje jsou připraveny.</div>
     </section>
     <div id="appMessage" class="notice hidden"></div>
@@ -252,11 +304,90 @@ function renderAll(){
   $("categoryGrid").querySelectorAll(".invest-form").forEach(form=>form.addEventListener("submit",invest));
   $("leaderboardBody").innerHTML=sorted.map((p,i)=>`<tr><td>${i+1}.</td><td>${esc(p.nickname||"Neznámý hráč")}${p.uid===currentUser.uid?" (ty)":""}</td><td><strong>${sumInvestments(p.investments)}</strong></td><td>${available(p)}</td></tr>`).join("");
   if(isAdmin){
-    const opts=players.slice().sort((a,b)=>(a.nickname||"").localeCompare(b.nickname||"","cs")).map(p=>`<option value="${esc(p.uid)}">${esc(p.nickname||p.uid)}</option>`).join("");
-    $("awardPlayer").innerHTML=opts;$("correctPlayer").innerHTML=opts;
-    $("adminSummary").textContent=`Přihlášen jako administrátor. Profily v databázi: ${players.length}.`;
+    const opts=players.slice()
+      .sort((a,b)=>(a.nickname||"").localeCompare(b.nickname||"","cs"))
+      .map(p=>`<option value="${esc(p.uid)}">${esc(p.nickname||p.uid)}</option>`)
+      .join("");
+
+    $("awardPlayer").innerHTML=opts;
+    $("correctPlayer").innerHTML=opts;
+
+    $("adminSummary").textContent=
+      `Přihlášen jako administrátor. Profily v databázi: ${players.length}.`;
+
+    renderCategoryRankings();
   }
 }
+function renderCategoryRankings() {
+  if (!isAdmin) return;
+
+  $("categoryRankings").innerHTML = categories.map(category => {
+    const sorted = [...players].sort((a, b) => {
+      const aInvestment = Number(a.investments?.[category.id] || 0);
+      const bInvestment = Number(b.investments?.[category.id] || 0);
+
+      if (bInvestment !== aInvestment) {
+        return bInvestment - aInvestment;
+      }
+
+      return (a.nickname || "").localeCompare(
+        b.nickname || "",
+        "cs"
+      );
+    });
+
+    let previousInvestment = null;
+    let previousRank = 0;
+
+    const rows = sorted.map((player, index) => {
+      const investment = Number(
+        player.investments?.[category.id] || 0
+      );
+
+      if (investment !== previousInvestment) {
+        previousRank = index + 1;
+        previousInvestment = investment;
+      }
+
+      return `
+        <tr>
+          <td class="rank-number">${previousRank}.</td>
+          <td>${esc(player.nickname || "Neznámý hráč")}</td>
+          <td><strong>${investment}</strong></td>
+        </tr>
+      `;
+    }).join("");
+
+    return `
+      <section class="ranking-box">
+        <div class="leaderboard-head">
+          <h3>${esc(category.name)}</h3>
+          <p>${sorted.length} hráčů · pořadí podle investovaných bodů</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pořadí</th>
+                <th>Kovboj</th>
+                <th>Investice</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows || `
+                <tr>
+                  <td colspan="3">Zatím nejsou založení žádní hráči.</td>
+                </tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  }).join("");
+}
+
 async function invest(event){
   event.preventDefault();
   const form=event.currentTarget,categoryId=form.dataset.category,amount=Number(form.elements.amount.value);
