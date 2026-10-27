@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prairie Auction — Bodová aukce</title>
+<title>Western Auction — Bodová aukce</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Roboto+Slab:wght@400;500;600;700;800&display=swap');
 :root{--bg:#211811;--panel:#35251b;--panel-light:#443023;--paper:#ead9b5;--paper-dark:#d4bc8c;--ink:#302116;--cream:#f7ecd4;--muted:#c2ad8c;--gold:#d6a650;--gold-light:#f0cc7a;--red:#a64d36;--border:#72543b;--green:#a4b57b}
@@ -37,8 +37,8 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Prairie Auction<small>THE WILD WEST BOUNTY</small></div>
-  <div class="badge">Sezóna 2026</div>
+  <div class="brand">Western Auction<small>AUKCE O LETOŠNÍ CENY</small></div>
+  <div class="badge">Weverklání 2026</div>
 </header>
 <main>
   <section id="loginScreen">
@@ -46,12 +46,17 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
       <div>
         <div class="eyebrow">Vítej na Divokém západě</div>
         <h1>Každý bod<br>má svou cenu.</h1>
-        <p class="subtitle">Vítej na aukci, kde se rozhoduje o kořisti. Sbírej body během dne, investuj je do kategorií a zajisti si první výběr těch nejlepších cen.</p>
+        <p class="subtitle">Vítej na aukci O ceny na Weverklání 2026.</p>
+        <p class="subtitle">Každý kovboj může investovat libovolný počet svých bodů do jakékoliv z kategorií v poměru. Vždy přitom vidí, kolik zatím dohromady do kategorie vložil a kolik je nejvyšší investice, která v kategorii zatím vede.</p>
+		<p class="subtitle">Stejně tak každý kovboj vidí, kolikátý je v celkovém pořadí. To ale nemusí hrát tak velkou roli - být první, ale vše nainvestovat do jedné kategorie, může být méně výhodné, než být druhý ve všech kategoriích zároveň.</p>
+		<p class="subtitle">Na konci dne totiž ten kovboj, který v kategorii zvítězil, získává právo si jako první vybrat z cen v kategorii. Po něm si pak vybírá druhý kovboj v pořadí a tak dále a tak dále, dokud v kategoorii nedojdou ceny.</p>
+        <p class="subtitle">Sbírej body během dne, investuj je do jednotlivých kategorií a zajisti si první výběr těch nejlepších cen.</p>
+
         <div class="divider"></div>
-        <div class="poster"><div class="poster-sub">THE GREAT FRONTIER</div><div class="wanted">BOUNTY<br>AUCTION</div><div class="poster-sub">FOUR CATEGORIES · ONE WINNER'S SPIRIT</div></div>
+        <div class="poster"><div class="poster-sub">STATEK U KUBŮ</div><div class="wanted">BOUNTY<br>AUCTION</div><div class="poster-sub">DIFFERENT CATEGORIES · ONE WINNER'S SPIRIT</div></div>
       </div>
       <div class="paper login-card">
-        <div class="eyebrow" style="color:#80603a">Vstup do saloonu</div>
+        <div class="eyebrow" style="color:#80603a">Vstup do aukce</div>
         <h2>Přihlaš se, kovboji.</h2>
         <p style="font-size:12px;line-height:1.7;color:#735b3d">Zadej přezdívku a osobní přístupový kód, které jsi dostal od organizátora.</p>
         <form id="loginForm">
@@ -62,14 +67,14 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
           <button class="btn btn-block" id="loginButton" type="submit">VSTOUPIT DO AUKCE →</button>
         </form>
         <div id="loginMessage" class="notice hidden"></div>
-        <p class="small-note">Účet ti připraví organizátor. Registrace není dostupná.</p>
+        <p class="small-note">Účet ti připraví organizátor. Pokud ne, hlasitě si stěžuj.</p>
       </div>
     </div>
   </section>
 
   <section id="dashboard" class="hidden">
     <div class="dashboard-header">
-      <div><div class="eyebrow" id="welcomeEyebrow">Přihlášený účastník</div><h1 id="welcomeTitle">Zdravím tě, kovboji!</h1><p class="subtitle" id="welcomeSubtitle">Tvoje body jsou tvoje munice. Používej je s rozvahou.</p></div>
+      <div><div class="eyebrow" id="welcomeEyebrow">Přihlášený účastník</div><h1 id="welcomeTitle">Zdravím tě, kovboji!</h1><p class="subtitle" id="welcomeSubtitle">ŽÁDNÉ BODY PO INVESTOVÁNÍ NELZE VRÁTIT! Tvoje body jsou tvoje munice. Používej je s rozvahou.</p></div>
       <button class="btn btn-secondary" id="logoutButton">← Odhlásit</button>
     </div>
     <div class="balance-grid">
@@ -79,7 +84,7 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
     </div>
     <div class="section-heading"><div><div class="eyebrow">Vyber svou kořist</div><h2>Kategorie aukce</h2></div><p>Investice jsou nevratné.</p></div>
     <div class="category-grid" id="categoryGrid"></div>
-    <div class="section-heading"><div><div class="eyebrow">Kdo vede přestřelku?</div><h2>Průběžné pořadí</h2></div></div>
+    <div class="section-heading"><div><div class="eyebrow">Kdo vede celkem?</div><h2>Průběžné celkové pořadí</h2></div></div>
     <div class="leaderboard"><div class="leaderboard-head"><h3>Tvoje pozice</h3><p>Pořadí se průběžně aktualizuje podle uložených investic.</p></div><div class="table-wrap"><table><thead><tr><th>Pořadí</th><th>Kovboj</th><th>Investováno</th><th>Dostupné body</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div>
     <section id="adminPanel" class="admin-tools hidden">
       <div class="eyebrow">Kancelář šerifa</div><h2>Administrace aukce</h2>
@@ -122,7 +127,7 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
     </section>
     <div id="appMessage" class="notice hidden"></div>
   </section>
-  <footer>PRAIRIE AUCTION · THE FRONTIER AWAITS</footer>
+  <footer>WEVERKLÁNÍ 2026 · VIBECODED BY PÁJA</footer>
 </main>
 
 <script type="module">
@@ -146,10 +151,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const categories = [
-  {id:"gear",name:"Výbava kovboje",description:"Vybavení, které by nemělo chybět žádnému dobrodruhovi."},
-  {id:"treasure",name:"Zlatý poklad",description:"Cennosti a poklady pro ty, kdo mají dobrý odhad."},
-  {id:"saloon",name:"Saloon & pohoda",description:"Odměny pro chvíle, kdy je čas složit ostruhy."},
-  {id:"mystery",name:"Tajemná bedna",description:"Nikdo neví, co se uvnitř skrývá. O to je to zajímavější."}
+  {id:"gear",name:"Deskovky",description:"Tady: Výpis deskovek a MtG kokotinek"},
+  {id:"treasure",name:"Alkohol",description:"Tady: Seznam flašek co máme."},
+  {id:"saloon",name:"Larp",description:"Tady: Seznam cen z oblasti larpu."},
+  {id:"mystery",name:"Ostatní",description:"Tady: Seznam cen co tam budou."}
 ];
 const emptyInvestments = () => ({gear:0,treasure:0,saloon:0,mystery:0});
 let currentUser = null;
