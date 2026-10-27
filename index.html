@@ -4,929 +4,325 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prairie Auction — Bodová aukce</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Roboto+Slab:wght@400;500;600;700;800&display=swap');
-
-:root {
-  --bg: #211811;
-  --panel: #35251b;
-  --panel-light: #443023;
-  --paper: #ead9b5;
-  --paper-dark: #d4bc8c;
-  --ink: #302116;
-  --cream: #f7ecd4;
-  --muted: #c2ad8c;
-  --gold: #d6a650;
-  --gold-light: #f0cc7a;
-  --red: #a64d36;
-  --border: #72543b;
-  --green: #a4b57b;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background:
-    radial-gradient(ellipse at top, #493322 0%, transparent 65%),
-    var(--bg);
-  color: var(--cream);
-  font-family: 'Roboto Slab', Georgia, serif;
-  min-height: 100vh;
-}
-
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-
-.topbar {
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(22, 15, 10, 0.72);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand {
-  font-family: 'IM Fell English SC', Georgia, serif;
-  font-size: 25px;
-  color: var(--gold-light);
-  letter-spacing: 1.5px;
-}
-
-.brand small {
-  display: block;
-  font-family: 'Roboto Slab', Georgia, serif;
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--muted);
-  margin-top: 3px;
-}
-
-.badge {
-  border: 1px solid var(--border);
-  padding: 7px 11px;
-  border-radius: 4px;
-  color: var(--gold-light);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-main {
-  width: min(1100px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 36px 0 60px;
-}
-
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  font-size: 11px;
-  color: var(--gold);
-  margin-bottom: 12px;
-}
-
-h1, h2, h3, p { margin-top: 0; }
-
-h1, h2, h3 {
-  font-family: 'IM Fell English SC', Georgia, serif;
-  font-weight: normal;
-}
-
-h1 {
-  font-size: clamp(36px, 7vw, 64px);
-  line-height: 1.05;
-  margin-bottom: 14px;
-  color: var(--paper);
-}
-
-h2 { font-size: 29px; margin-bottom: 8px; }
-h3 { font-size: 23px; margin-bottom: 10px; }
-
-.subtitle {
-  color: var(--muted);
-  line-height: 1.8;
-  max-width: 610px;
-  font-size: 14px;
-}
-
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-  margin: 28px 0;
-}
-
-.paper {
-  color: var(--ink);
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.12), transparent 40%),
-    var(--paper);
-  border: 1px solid var(--paper-dark);
-  border-radius: 3px;
-  box-shadow: 0 9px 25px rgba(0,0,0,.2);
-}
-
-.login-layout {
-  display: grid;
-  grid-template-columns: 1.15fr .85fr;
-  gap: 34px;
-  align-items: center;
-}
-
-.poster {
-  text-align: center;
-  padding: 26px 20px;
-  border: 1px solid var(--border);
-  background: rgba(20,13,8,.24);
-  position: relative;
-}
-
-.poster::before, .poster::after {
-  content: "✦";
-  display: block;
-  color: var(--gold);
-  font-size: 22px;
-  margin: 5px;
-}
-
-.poster .wanted {
-  font-family: 'IM Fell English SC', Georgia, serif;
-  font-size: clamp(40px, 6vw, 68px);
-  line-height: 1;
-  color: var(--gold-light);
-  margin: 18px 0;
-}
-
-.poster .poster-sub {
-  letter-spacing: 4px;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.login-card {
-  padding: 28px;
-}
-
-.login-card h2 { margin-bottom: 8px; }
-
-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  margin: 18px 0 7px;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px 13px;
-  border: 1px solid #b39a70;
-  border-radius: 3px;
-  background: #f6ead1;
-  color: var(--ink);
-  outline: none;
-}
-
-input:focus, select:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(214,166,80,.2);
-}
-
-.btn {
-  display: inline-block;
-  padding: 12px 18px;
-  border: 1px solid #edc979;
-  border-radius: 3px;
-  background: var(--gold);
-  color: #291b10;
-  font-weight: 800;
-  text-align: center;
-  transition: .15s ease;
-}
-
-.btn:hover { background: var(--gold-light); transform: translateY(-1px); }
-
-.btn-block { width: 100%; margin-top: 22px; }
-
-.btn-secondary {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--cream);
-}
-
-.btn-secondary:hover { background: var(--panel-light); }
-
-.btn-danger {
-  background: var(--red);
-  border-color: #c87c60;
-  color: white;
-}
-
-.small-note {
-  font-size: 11px;
-  color: #735b3d;
-  line-height: 1.7;
-  margin: 16px 0 0;
-}
-
-.demo-warning {
-  border: 1px dashed #987445;
-  color: #d8bd8e;
-  background: rgba(0,0,0,.15);
-  padding: 12px 14px;
-  font-size: 11px;
-  line-height: 1.7;
-  margin-top: 20px;
-}
-
-.hidden { display: none !important; }
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  margin-bottom: 25px;
-}
-
-.dashboard-header h1 { font-size: clamp(35px, 5vw, 49px); }
-
-.balance-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 25px 0 35px;
-}
-
-.stat {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 20px;
-  min-width: 0;
-}
-
-.stat .label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-
-.stat .value {
-  color: var(--gold-light);
-  font-family: 'IM Fell English SC', Georgia, serif;
-  font-size: clamp(26px, 4vw, 39px);
-  overflow-wrap: anywhere;
-}
-
-.stat .suffix { color: var(--muted); font-size: 12px; }
-
-.section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 38px 0 17px;
-}
-
-.section-heading p { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.category {
-  padding: 23px;
-  position: relative;
-  overflow: hidden;
-}
-
-.category::after {
-  content: "✦";
-  position: absolute;
-  right: 16px;
-  top: 10px;
-  color: rgba(87,59,32,.15);
-  font-size: 52px;
-}
-
-.category .number {
-  color: #866a43;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.category .description {
-  font-size: 12px;
-  color: #725b3e;
-  line-height: 1.7;
-  margin-bottom: 18px;
-}
-
-.category-stats {
-  display: flex;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.category-stat {
-  flex: 1;
-  background: rgba(80,55,25,.07);
-  padding: 10px;
-  min-width: 0;
-}
-
-.category-stat span {
-  display: block;
-  font-size: 10px;
-  color: #806849;
-  margin-bottom: 5px;
-}
-
-.category-stat strong {
-  font-size: 20px;
-  overflow-wrap: anywhere;
-}
-
-.invest-form {
-  border-top: 1px solid rgba(80,55,25,.2);
-  padding-top: 14px;
-  margin-top: 15px;
-}
-
-.invest-form label { margin-top: 0; color: #59432b; }
-
-.invest-row {
-  display: flex;
-  gap: 8px;
-}
-
-.invest-row input { min-width: 0; }
-
-.invest-row .btn { white-space: nowrap; padding: 10px 13px; }
-
-.my-investment {
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 13px;
-  color: #60482c;
-}
-
-.leaderboard {
-  border: 1px solid var(--border);
-  background: var(--panel);
-  margin-top: 20px;
-}
-
-.leaderboard-head {
-  padding: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.leaderboard-head p { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
-
-.table-wrap { overflow-x: auto; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  min-width: 500px;
-}
-
-th, td {
-  padding: 13px 17px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255,255,255,.07);
-}
-
-th {
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 10px;
-}
-
-td strong { color: var(--gold-light); }
-
-tr:last-child td { border-bottom: none; }
-
-.admin-tools {
-  padding: 23px;
-  margin-top: 28px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-}
-
-.admin-tools p { font-size: 12px; color: var(--muted); line-height: 1.7; }
-
-.admin-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 10px;
-  align-items: end;
-}
-
-.admin-form label { margin-top: 0; }
-
-.admin-form .btn { padding: 12px; }
-
-.notice {
-  padding: 12px 14px;
-  margin-top: 15px;
-  font-size: 12px;
-  line-height: 1.6;
-  border: 1px solid var(--border);
-  background: rgba(0,0,0,.15);
-  color: var(--muted);
-}
-
-footer {
-  text-align: center;
-  color: #80684d;
-  font-size: 10px;
-  letter-spacing: 2px;
-  margin-top: 55px;
-}
-
-@media (max-width: 720px) {
-  .login-layout { grid-template-columns: 1fr; gap: 20px; }
-  .poster { padding: 15px; }
-  .poster .wanted { font-size: 45px; }
-  .balance-grid { grid-template-columns: 1fr; gap: 10px; }
-  .stat { padding: 16px; }
-  .stat .value { font-size: 31px; }
-  .category-grid { grid-template-columns: 1fr; }
-  .dashboard-header { flex-direction: column; }
-  .admin-form { grid-template-columns: 1fr; }
-  .topbar { padding: 15px; }
-  .brand { font-size: 20px; }
-  main { padding-top: 25px; }
-  .login-card { padding: 22px; }
-}
+:root{--bg:#211811;--panel:#35251b;--panel-light:#443023;--paper:#ead9b5;--paper-dark:#d4bc8c;--ink:#302116;--cream:#f7ecd4;--muted:#c2ad8c;--gold:#d6a650;--gold-light:#f0cc7a;--red:#a64d36;--border:#72543b;--green:#a4b57b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#493322 0%,transparent 65%),var(--bg);color:var(--cream);font-family:'Roboto Slab',Georgia,serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer}.topbar{padding:18px 24px;border-bottom:1px solid var(--border);background:rgba(22,15,10,.72);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-family:'IM Fell English SC',Georgia,serif;font-size:25px;color:var(--gold-light);letter-spacing:1.5px}.brand small{display:block;font-family:'Roboto Slab',Georgia,serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-top:3px}
+.badge{border:1px solid var(--border);padding:7px 11px;border-radius:4px;color:var(--gold-light);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+main{width:min(1100px,calc(100% - 32px));margin:0 auto;padding:36px 0 60px}.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--gold);margin-bottom:12px}
+h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:'IM Fell English SC',Georgia,serif;font-weight:normal}h1{font-size:clamp(36px,7vw,64px);line-height:1.05;margin-bottom:14px;color:var(--paper)}h2{font-size:29px;margin-bottom:8px}h3{font-size:23px;margin-bottom:10px}
+.subtitle{color:var(--muted);line-height:1.8;max-width:610px;font-size:14px}.divider{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:28px 0}
+.paper{color:var(--ink);background:linear-gradient(135deg,rgba(255,255,255,.12),transparent 40%),var(--paper);border:1px solid var(--paper-dark);border-radius:3px;box-shadow:0 9px 25px rgba(0,0,0,.2)}
+.login-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}.poster{text-align:center;padding:26px 20px;border:1px solid var(--border);background:rgba(20,13,8,.24);position:relative}.poster:before,.poster:after{content:"✦";display:block;color:var(--gold);font-size:22px;margin:5px}
+.poster .wanted{font-family:'IM Fell English SC',Georgia,serif;font-size:clamp(40px,6vw,68px);line-height:1;color:var(--gold-light);margin:18px 0}.poster .poster-sub{letter-spacing:4px;font-size:11px;color:var(--muted)}
+.login-card{padding:28px}.login-card h2{margin-bottom:8px}label{display:block;font-size:12px;font-weight:700;margin:18px 0 7px}
+input,select{width:100%;padding:12px 13px;border:1px solid #b39a70;border-radius:3px;background:#f6ead1;color:var(--ink);outline:none}input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(214,166,80,.2)}
+.btn{display:inline-block;padding:12px 18px;border:1px solid #edc979;border-radius:3px;background:var(--gold);color:#291b10;font-weight:800;text-align:center;transition:.15s ease}.btn:hover{background:var(--gold-light);transform:translateY(-1px)}.btn-block{width:100%;margin-top:22px}.btn-secondary{background:transparent;border-color:var(--border);color:var(--cream)}.btn-secondary:hover{background:var(--panel-light)}.btn-danger{background:var(--red);border-color:#c87c60;color:white}.small-note{font-size:11px;color:#735b3d;line-height:1.7;margin:16px 0 0}.hidden{display:none!important}
+.dashboard-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:25px}.dashboard-header h1{font-size:clamp(35px,5vw,49px)}
+.balance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:25px 0 35px}.stat{background:var(--panel);border:1px solid var(--border);padding:20px;min-width:0}.stat .label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px}.stat .value{color:var(--gold-light);font-family:'IM Fell English SC',Georgia,serif;font-size:clamp(26px,4vw,39px);overflow-wrap:anywhere}.stat .suffix{color:var(--muted);font-size:12px}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:38px 0 17px}.section-heading p{color:var(--muted);font-size:12px;margin-bottom:4px}.category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.category{padding:23px;position:relative;overflow:hidden}.category:after{content:"✦";position:absolute;right:16px;top:10px;color:rgba(87,59,32,.15);font-size:52px}.category .number{color:#866a43;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}.category .description{font-size:12px;color:#725b3e;line-height:1.7;margin-bottom:18px}
+.category-stats{display:flex;gap:10px;margin:15px 0}.category-stat{flex:1;background:rgba(80,55,25,.07);padding:10px;min-width:0}.category-stat span{display:block;font-size:10px;color:#806849;margin-bottom:5px}.category-stat strong{font-size:20px;overflow-wrap:anywhere}
+.invest-form{border-top:1px solid rgba(80,55,25,.2);padding-top:14px;margin-top:15px}.invest-form label{margin-top:0;color:#59432b}.invest-row{display:flex;gap:8px}.invest-row input{min-width:0}.invest-row .btn{white-space:nowrap;padding:10px 13px}.my-investment{font-size:12px;font-weight:700;margin-top:13px;color:#60482c}
+.leaderboard{border:1px solid var(--border);background:var(--panel);margin-top:20px}.leaderboard-head{padding:20px;border-bottom:1px solid var(--border)}.leaderboard-head p{color:var(--muted);font-size:12px;margin:6px 0 0}.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}th,td{padding:13px 17px;text-align:left;border-bottom:1px solid rgba(255,255,255,.07)}th{color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-size:10px}td strong{color:var(--gold-light)}tr:last-child td{border-bottom:none}
+.admin-tools{padding:23px;margin-top:28px;border:1px solid var(--border);background:var(--panel)}.admin-tools p{font-size:12px;color:var(--muted);line-height:1.7}.admin-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}.admin-form label{margin-top:0}.admin-form .btn{padding:12px}
+.notice{padding:12px 14px;margin-top:15px;font-size:12px;line-height:1.6;border:1px solid var(--border);background:rgba(0,0,0,.15);color:var(--muted)}.notice.error{color:#ffb6a0;border-color:var(--red)}.notice.success{color:var(--green)}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.admin-box{border:1px solid var(--border);padding:18px;background:rgba(0,0,0,.12)}.admin-box h3{color:var(--gold-light)}.admin-box .btn{margin-top:14px}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-top:55px}.status{font-size:12px;color:var(--muted);line-height:1.7}
+@media(max-width:720px){.login-layout{grid-template-columns:1fr;gap:20px}.poster{padding:15px}.poster .wanted{font-size:45px}.balance-grid{grid-template-columns:1fr;gap:10px}.stat{padding:16px}.stat .value{font-size:31px}.category-grid{grid-template-columns:1fr}.dashboard-header{flex-direction:column}.admin-form,.admin-grid,.inline-fields{grid-template-columns:1fr}.topbar{padding:15px}.brand{font-size:20px}main{padding-top:25px}.login-card{padding:22px}}
 </style>
 </head>
-
 <body>
 <header class="topbar">
-  <div class="brand">
-    Prairie Auction
-    <small>THE WILD WEST BOUNTY</small>
-  </div>
+  <div class="brand">Prairie Auction<small>THE WILD WEST BOUNTY</small></div>
   <div class="badge">Sezóna 2026</div>
 </header>
-
 <main>
-  <!-- PŘIHLAŠOVACÍ OBRAZOVKA -->
   <section id="loginScreen">
     <div class="login-layout">
       <div>
         <div class="eyebrow">Vítej na Divokém západě</div>
         <h1>Každý bod<br>má svou cenu.</h1>
-        <p class="subtitle">
-          Vítej na aukci, kde se rozhoduje o kořisti.
-          Sbírej body během dne, investuj je do kategorií
-          a zajisti si první výběr těch nejlepších cen.
-        </p>
-
+        <p class="subtitle">Vítej na aukci, kde se rozhoduje o kořisti. Sbírej body během dne, investuj je do kategorií a zajisti si první výběr těch nejlepších cen.</p>
         <div class="divider"></div>
-
-        <div class="poster">
-          <div class="poster-sub">THE GREAT FRONTIER</div>
-          <div class="wanted">BOUNTY<br>AUCTION</div>
-          <div class="poster-sub">FOUR CATEGORIES · ONE WINNER'S SPIRIT</div>
-        </div>
+        <div class="poster"><div class="poster-sub">THE GREAT FRONTIER</div><div class="wanted">BOUNTY<br>AUCTION</div><div class="poster-sub">FOUR CATEGORIES · ONE WINNER'S SPIRIT</div></div>
       </div>
-
       <div class="paper login-card">
         <div class="eyebrow" style="color:#80603a">Vstup do saloonu</div>
         <h2>Přihlaš se, kovboji.</h2>
-        <p style="font-size:12px;line-height:1.7;color:#735b3d">
-          Zadej svou přezdívku a osobní přístupový kód.
-        </p>
-
+        <p style="font-size:12px;line-height:1.7;color:#735b3d">Zadej přezdívku a osobní přístupový kód, které jsi dostal od organizátora.</p>
         <form id="loginForm">
           <label for="nickname">Přezdívka</label>
-          <input id="nickname" type="text" placeholder="Např. Old Shatterhand" required maxlength="40">
-
+          <input id="nickname" type="text" placeholder="Např. Kovboj" required maxlength="40" autocomplete="username">
           <label for="accessCode">Přístupový kód</label>
-          <input id="accessCode" type="password" placeholder="Tvůj tajný kód" required>
-
-          <label for="role">Typ účtu (pouze ukázka)</label>
-          <select id="role">
-            <option value="player">Hráč</option>
-            <option value="admin">Administrátor</option>
-          </select>
-
-          <button class="btn btn-block" type="submit">VSTOUPIT DO AUKCE →</button>
+          <input id="accessCode" type="password" placeholder="Tvůj tajný kód" required autocomplete="current-password">
+          <button class="btn btn-block" id="loginButton" type="submit">VSTOUPIT DO AUKCE →</button>
         </form>
-
-        <div class="demo-warning">
-          UKÁZKOVÁ VERZE — přihlášení zatím neověřuje skutečný účet.
-          Zadaný kód se nikam neposílá ani neukládá. Ostré přihlášení
-          a ukládání dat napojíme na Firebase v dalším kroku.
-        </div>
+        <div id="loginMessage" class="notice hidden"></div>
+        <p class="small-note">Účet ti připraví organizátor. Registrace není dostupná.</p>
       </div>
     </div>
   </section>
 
-  <!-- UKÁZKOVÝ DASHBOARD -->
   <section id="dashboard" class="hidden">
     <div class="dashboard-header">
-      <div>
-        <div class="eyebrow" id="welcomeEyebrow">Přihlášený účastník</div>
-        <h1 id="welcomeTitle">Zdravím tě, kovboji!</h1>
-        <p class="subtitle" id="welcomeSubtitle">
-          Tvoje body jsou tvoje munice. Používej je s rozvahou.
-        </p>
-      </div>
+      <div><div class="eyebrow" id="welcomeEyebrow">Přihlášený účastník</div><h1 id="welcomeTitle">Zdravím tě, kovboji!</h1><p class="subtitle" id="welcomeSubtitle">Tvoje body jsou tvoje munice. Používej je s rozvahou.</p></div>
       <button class="btn btn-secondary" id="logoutButton">← Odhlásit</button>
     </div>
-
     <div class="balance-grid">
-      <div class="stat">
-        <div class="label">Dostupné body</div>
-        <div class="value" id="availablePoints">120</div>
-        <div class="suffix">bodů k dispozici</div>
-      </div>
-      <div class="stat">
-        <div class="label">Investováno celkem</div>
-        <div class="value" id="totalInvested">0</div>
-        <div class="suffix">bodů v kategoriích</div>
-      </div>
-      <div class="stat">
-        <div class="label">Moje pořadí</div>
-        <div class="value" id="overallRank">—</div>
-        <div class="suffix">v ukázkových datech</div>
-      </div>
+      <div class="stat"><div class="label">Dostupné body</div><div class="value" id="availablePoints">—</div><div class="suffix">bodů k dispozici</div></div>
+      <div class="stat"><div class="label">Investováno celkem</div><div class="value" id="totalInvested">—</div><div class="suffix">bodů v kategoriích</div></div>
+      <div class="stat"><div class="label">Moje pořadí</div><div class="value" id="overallRank">—</div><div class="suffix">v celkovém pořadí</div></div>
     </div>
-
-    <div class="section-heading">
-      <div>
-        <div class="eyebrow">Vyber svou kořist</div>
-        <h2>Kategorie aukce</h2>
-      </div>
-      <p>Investice jsou nevratné.</p>
-    </div>
-
+    <div class="section-heading"><div><div class="eyebrow">Vyber svou kořist</div><h2>Kategorie aukce</h2></div><p>Investice jsou nevratné.</p></div>
     <div class="category-grid" id="categoryGrid"></div>
-
-    <div class="section-heading">
-      <div>
-        <div class="eyebrow">Kdo vede přestřelku?</div>
-        <h2>Průběžné pořadí</h2>
-      </div>
-    </div>
-
-    <div class="leaderboard">
-      <div class="leaderboard-head">
-        <h3 id="leaderboardTitle">Tvoje pozice</h3>
-        <p>Ukázková tabulka. Skutečné pořadí se načte po napojení databáze.</p>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Pořadí</th>
-              <th>Kovboj</th>
-              <th>Investováno</th>
-              <th>Dostupné body</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- UKÁZKOVÉ ADMIN FUNKCE -->
+    <div class="section-heading"><div><div class="eyebrow">Kdo vede přestřelku?</div><h2>Průběžné pořadí</h2></div></div>
+    <div class="leaderboard"><div class="leaderboard-head"><h3>Tvoje pozice</h3><p>Pořadí se průběžně aktualizuje podle uložených investic.</p></div><div class="table-wrap"><table><thead><tr><th>Pořadí</th><th>Kovboj</th><th>Investováno</th><th>Dostupné body</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div>
     <section id="adminPanel" class="admin-tools hidden">
-      <div class="eyebrow">Kancelář šerifa</div>
-      <h2>Administrace aukce</h2>
-      <p>
-        V této ukázce můžeš vyzkoušet přidělování bodů.
-        Později sem přidáme správu hráčů, úpravy chybných investic,
-        názvy kategorií, ceny a uzavření aukce.
-      </p>
-
-      <form id="adminForm" class="admin-form">
-        <div>
-          <label for="adminPlayer">Hráč</label>
-          <select id="adminPlayer"></select>
+      <div class="eyebrow">Kancelář šerifa</div><h2>Administrace aukce</h2>
+      <p>Účty se vytvářejí předem ve Firebase Authentication. Zde k nim přiřadíš profil a můžeš přidělovat body nebo opravovat investice. UID účtu najdeš ve Firebase Console → Authentication → Users.</p>
+      <div class="admin-grid">
+        <div class="admin-box">
+          <h3>1. Založit profil hráče</h3>
+          <form id="createPlayerForm">
+            <label for="newPlayerUid">Firebase UID hráče</label><input id="newPlayerUid" required placeholder="Vlož celé UID">
+            <label for="newPlayerNickname">Přezdívka hráče</label><input id="newPlayerNickname" required maxlength="40" placeholder="Např. Old Shatterhand">
+            <label for="newPlayerPoints">Počáteční body</label><input id="newPlayerPoints" type="number" min="0" step="1" value="0" required>
+            <button class="btn" type="submit">Vytvořit profil</button>
+          </form>
         </div>
-        <div>
-          <label for="adminAmount">Počet bodů</label>
-          <input id="adminAmount" type="number" min="1" step="1" value="10" required>
+        <div class="admin-box">
+          <h3>2. Přidělit body</h3>
+          <form id="awardForm">
+            <label for="awardPlayer">Hráč</label><select id="awardPlayer" required></select>
+            <label for="awardAmount">Počet bodů navíc</label><input id="awardAmount" type="number" min="1" step="1" value="10" required>
+            <label for="awardReason">Poznámka (nepovinná)</label><input id="awardReason" maxlength="120" placeholder="Např. splněný úkol">
+            <button class="btn" type="submit">Přidělit body</button>
+          </form>
         </div>
-        <div>
-          <label for="adminReason">Poznámka</label>
-          <input id="adminReason" type="text" placeholder="Např. splněný úkol">
+        <div class="admin-box">
+          <h3>3. Opravit investici</h3>
+          <p>Zadej novou celkovou hodnotu investice hráče v dané kategorii. Tato funkce je určena pouze pro opravy organizátorem.</p>
+          <form id="correctForm">
+            <label for="correctPlayer">Hráč</label><select id="correctPlayer" required></select>
+            <label for="correctCategory">Kategorie</label><select id="correctCategory"><option value="gear">Výbava kovboje</option><option value="treasure">Zlatý poklad</option><option value="saloon">Saloon & pohoda</option><option value="mystery">Tajemná bedna</option></select>
+            <label for="correctAmount">Nová celková investice</label><input id="correctAmount" type="number" min="0" step="1" required value="0">
+            <button class="btn" type="submit">Opravit investici</button>
+          </form>
         </div>
-        <button class="btn" type="submit">Přidělit body</button>
-      </form>
-
-      <div id="adminMessage" class="notice">
-        Jde pouze o místní ukázku. Změny se do databáze neukládají.
+        <div class="admin-box">
+          <h3>Stav systému</h3><p id="adminSummary" class="status">Načítám…</p>
+          <p>Nový hráč musí mít účet ve Firebase Authentication a jeho UID musí být vloženo do formuláře vlevo nahoře. Samotné vytvoření profilu nevytváří přihlašovací účet.</p>
+        </div>
       </div>
+      <div id="adminMessage" class="notice">Administrátorské nástroje jsou připraveny.</div>
     </section>
-
-    <div class="demo-warning">
-      POZOR: Toto je pouze interaktivní prototyp. Údaje jsou dočasné,
-      nejsou sdílené s ostatními hráči a po obnovení stránky se resetují.
-      Nepoužívej zde skutečné přístupové kódy.
-    </div>
+    <div id="appMessage" class="notice hidden"></div>
   </section>
-
   <footer>PRAIRIE AUCTION · THE FRONTIER AWAITS</footer>
 </main>
 
-<script>
-const categories = [
-  {
-    id: "gear",
-    name: "Výbava kovboje",
-    description: "Vybavení, které by nemělo chybět žádnému dobrodruhovi.",
-    invested: 0,
-    leader: 85
-  },
-  {
-    id: "treasure",
-    name: "Zlatý poklad",
-    description: "Cennosti a poklady pro ty, kdo mají dobrý odhad.",
-    invested: 0,
-    leader: 110
-  },
-  {
-    id: "saloon",
-    name: "Saloon & pohoda",
-    description: "Odměny pro chvíle, kdy je čas složit ostruhy.",
-    invested: 0,
-    leader: 60
-  },
-  {
-    id: "mystery",
-    name: "Tajemná bedna",
-    description: "Nikdo neví, co se uvnitř skrývá. O to je to zajímavější.",
-    invested: 0,
-    leader: 95
-  }
-];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDdsvcVy1NhZD6MxVk2DZfDoiALgo2INM8",
+  authDomain: "pointsauctionwvklani.firebaseapp.com",
+  projectId: "pointsauctionwvklani",
+  storageBucket: "pointsauctionwvklani.firebasestorage.app",
+  messagingSenderId: "187175459831",
+  appId: "1:187175459831:web:a1df3507d6c06a5c9eacf2",
+  measurementId: "G-4NNPEJ7Q04"
+};
+
+const ADMIN_UID = "WKCf4hbAksbITbLsvMOvsAeqbiE2";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const categories = [
+  {id:"gear",name:"Výbava kovboje",description:"Vybavení, které by nemělo chybět žádnému dobrodruhovi."},
+  {id:"treasure",name:"Zlatý poklad",description:"Cennosti a poklady pro ty, kdo mají dobrý odhad."},
+  {id:"saloon",name:"Saloon & pohoda",description:"Odměny pro chvíle, kdy je čas složit ostruhy."},
+  {id:"mystery",name:"Tajemná bedna",description:"Nikdo neví, co se uvnitř skrývá. O to je to zajímavější."}
+];
+const emptyInvestments = () => ({gear:0,treasure:0,saloon:0,mystery:0});
 let currentUser = null;
 let isAdmin = false;
-let balance = 120;
-let investments = {};
-let demoPlayers = [
-  { name: "Dusty Pete", invested: 150, balance: 30 },
-  { name: "Calamity Jane", invested: 125, balance: 45 },
-  { name: "Billy the Kid", invested: 90, balance: 80 }
-];
+let myProfile = null;
+let players = [];
+let unsubscribePlayers = null;
+let busy = false;
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, function(char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char];
-  });
+const $ = id => document.getElementById(id);
+const sumInvestments = investments => categories.reduce((sum,c)=>sum+Number((investments||{})[c.id]||0),0);
+const available = player => Number(player.pointsAwarded||0)-sumInvestments(player.investments);
+function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function showMessage(id,text,type=""){const el=$(id);el.textContent=text;el.className="notice"+(type?" "+type:"");}
+function nicknameToEmail(nickname){
+  const normalized=nickname.trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  if(!normalized) throw new Error("Zadej platnou přezdívku.");
+  return normalized+"@auction.invalid";
 }
+function setBusy(form,value){form.querySelectorAll("button").forEach(b=>b.disabled=value);}
+function safeInvestments(data){const src=data||{};return {gear:Number(src.gear||0),treasure:Number(src.treasure||0),saloon:Number(src.saloon||0),mystery:Number(src.mystery||0)};}
 
-document.getElementById("loginForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  const nickname = document.getElementById("nickname").value.trim();
-  const code = document.getElementById("accessCode").value;
-  isAdmin = document.getElementById("role").value === "admin";
-
-  if (!nickname || !code) return;
-
-  // Pouze demonstrace: kód se neověřuje.
-  currentUser = nickname;
-  balance = 120;
-  investments = {};
-
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  document.getElementById("welcomeTitle").textContent = "Zdravím tě, " + nickname + "!";
-  document.getElementById("welcomeEyebrow").textContent =
-    isAdmin ? "Kancelář šerifa · Ukázkový režim" : "Účastník aukce · Ukázkový režim";
-
-  document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
-
-  renderCategories();
-  renderStats();
-  renderLeaderboard();
-  populateAdminPlayers();
-
-  window.scrollTo(0, 0);
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const form=e.currentTarget;setBusy(form,true);showMessage("loginMessage","Přihlašuji…");
+  $("loginMessage").classList.remove("hidden");
+  try{
+    const email=nicknameToEmail($("nickname").value);
+    await signInWithEmailAndPassword(auth,email,$("accessCode").value);
+  }catch(err){
+    showMessage("loginMessage",friendlyError(err),"error");
+  }finally{setBusy(form,false);}
 });
+function friendlyError(err){
+  const code=err?.code||"";
+  if(code.includes("invalid-credential")||code.includes("user-not-found")||code.includes("wrong-password"))return "Přezdívka nebo přístupový kód nejsou správné.";
+  if(code.includes("too-many-requests"))return "Příliš mnoho pokusů. Chvíli počkej a zkus to znovu.";
+  if(code.includes("network-request-failed"))return "Nepodařilo se připojit. Zkontroluj internetové připojení.";
+  if(code.includes("permission-denied"))return "Databáze odmítla operaci. Zkontroluj Firestore Rules.";
+  return "Něco se nepodařilo: "+(err?.message||code||"neznámá chyba");
+}
+$("logoutButton").addEventListener("click",()=>signOut(auth).catch(err=>alert(friendlyError(err))));
 
-document.getElementById("logoutButton").addEventListener("click", function() {
-  currentUser = null;
-  isAdmin = false;
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("loginScreen").classList.remove("hidden");
-  document.getElementById("accessCode").value = "";
-  window.scrollTo(0, 0);
-});
-
-function renderCategories() {
-  const grid = document.getElementById("categoryGrid");
-  grid.innerHTML = categories.map(function(category, index) {
-    const myInvestment = investments[category.id] || 0;
-    return `
-      <article class="paper category">
-        <div class="number">Kategorie 0${index + 1}</div>
-        <h3>${escapeHTML(category.name)}</h3>
-        <p class="description">${escapeHTML(category.description)}</p>
-
-        <div class="category-stats">
-          <div class="category-stat">
-            <span>Moje investice</span>
-            <strong>${myInvestment}</strong>
-          </div>
-          <div class="category-stat">
-            <span>Nejvyšší investice*</span>
-            <strong>${Math.max(category.leader, myInvestment)}</strong>
-          </div>
-        </div>
-
-        ${!isAdmin ? `
-          <form class="invest-form" data-category="${category.id}">
-            <label for="amount-${category.id}">Kolik bodů investuješ?</label>
-            <div class="invest-row">
-              <input id="amount-${category.id}" name="amount" type="number"
-                min="1" max="${balance}" step="1" placeholder="Počet bodů" required>
-              <button class="btn" type="submit">Investovat</button>
-            </div>
-          </form>
-        ` : `
-          <div class="my-investment">Administrátorský náhled</div>
-        `}
-
-        <div class="my-investment">
-          ${myInvestment > 0
-            ? "Do této kategorie už máš vloženo " + myInvestment + " bodů."
-            : "Zatím jsi do této kategorie nic nevložil."}
-        </div>
-      </article>
-    `;
-  }).join("");
-
-  grid.querySelectorAll(".invest-form").forEach(function(form) {
-    form.addEventListener("submit", function(event) {
-      event.preventDefault();
-      const categoryId = form.dataset.category;
-      const amount = Number(form.elements.amount.value);
-
-      if (!Number.isInteger(amount) || amount < 1) {
-        alert("Zadej kladný počet celých bodů.");
+onAuthStateChanged(auth,async user=>{
+  if(unsubscribePlayers){unsubscribePlayers();unsubscribePlayers=null;}
+  currentUser=user;myProfile=null;players=[];
+  if(!user){isAdmin=false;$("dashboard").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("accessCode").value="";return;}
+  isAdmin=user.uid===ADMIN_UID;
+  $("loginScreen").classList.add("hidden");$("dashboard").classList.remove("hidden");
+  $("adminPanel").classList.toggle("hidden",!isAdmin);
+  $("welcomeEyebrow").textContent=isAdmin?"Kancelář šerifa":"Účastník aukce";
+  $("welcomeSubtitle").textContent=isAdmin?"Spravuješ body, hráče a investice celé aukce.":"Tvoje body jsou tvoje munice. Používej je s rozvahou.";
+  $("welcomeTitle").textContent="Vítej, "+($("nickname").value.trim()||"kovboji")+"!";
+  try{
+    if(!isAdmin){
+      const profileSnap=await getDoc(doc(db,"players",user.uid));
+      if(!profileSnap.exists()){
+        await signOut(auth);
+        $("loginScreen").classList.remove("hidden");
+        showMessage("loginMessage","Tvůj účet ještě nemá připravený profil. Požádej organizátora, aby ho založil.","error");
+        $("loginMessage").classList.remove("hidden");
         return;
       }
-
-      if (amount > balance) {
-        alert("Nemáš dostatek dostupných bodů.");
-        return;
-      }
-
-      const category = categories.find(function(item) {
-        return item.id === categoryId;
-      });
-
-      if (!category) return;
-
-      const confirmed = confirm(
-        "Opravdu chceš investovat " + amount + " bodů do kategorie „" +
-        category.name + "“?\n\nTuto investici už v této ukázce nepůjde vrátit."
-      );
-
-      if (!confirmed) return;
-
-      balance -= amount;
-      investments[categoryId] = (investments[categoryId] || 0) + amount;
-
-      renderCategories();
-      renderStats();
-      renderLeaderboard();
-    });
-  });
-}
-
-function renderStats() {
-  const invested = Object.values(investments).reduce(function(sum, value) {
-    return sum + value;
-  }, 0);
-
-  document.getElementById("availablePoints").textContent = balance;
-  document.getElementById("totalInvested").textContent = invested;
-
-  const players = demoPlayers.concat([{
-    name: currentUser,
-    invested: invested,
-    balance: balance
-  }]);
-
-  players.sort(function(a, b) {
-    return b.invested - a.invested;
-  });
-
-  const rank = players.findIndex(function(player) {
-    return player.name === currentUser;
-  }) + 1;
-
-  document.getElementById("overallRank").textContent =
-    invested === 0 ? "—" : "#" + rank;
-}
-
-function renderLeaderboard() {
-  const invested = Object.values(investments).reduce(function(sum, value) {
-    return sum + value;
-  }, 0);
-
-  const players = demoPlayers.concat([{
-    name: currentUser,
-    invested: invested,
-    balance: balance
-  }]);
-
-  players.sort(function(a, b) {
-    return b.invested - a.invested;
-  });
-
-  document.getElementById("leaderboardBody").innerHTML =
-    players.map(function(player, index) {
-      const isMe = player.name === currentUser;
-      return `
-        <tr>
-          <td>${index + 1}.</td>
-          <td>${escapeHTML(player.name)}${isMe ? " (ty)" : ""}</td>
-          <td><strong>${player.invested}</strong></td>
-          <td>${player.balance}</td>
-        </tr>
-      `;
-    }).join("");
-}
-
-function populateAdminPlayers() {
-  const select = document.getElementById("adminPlayer");
-  const players = demoPlayers.concat([{
-    name: currentUser,
-    invested: Object.values(investments).reduce(function(sum, value) {
-      return sum + value;
-    }, 0),
-    balance: balance
-  }]);
-
-  select.innerHTML = players.map(function(player) {
-    return '<option value="' + escapeHTML(player.name) + '">' +
-      escapeHTML(player.name) + '</option>';
-  }).join("");
-}
-
-document.getElementById("adminForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  if (!isAdmin) return;
-
-  const playerName = document.getElementById("adminPlayer").value;
-  const amount = Number(document.getElementById("adminAmount").value);
-  const reason = document.getElementById("adminReason").value.trim();
-
-  if (!Number.isInteger(amount) || amount < 1) {
-    alert("Zadej kladný počet celých bodů.");
-    return;
-  }
-
-  if (playerName === currentUser) {
-    balance += amount;
-    renderStats();
-    renderCategories();
-    renderLeaderboard();
-  } else {
-    const player = demoPlayers.find(function(item) {
-      return item.name === playerName;
-    });
-
-    if (player) {
-      player.balance += amount;
+      myProfile={uid:user.uid,...profileSnap.data()};
     }
+    unsubscribePlayers=onSnapshot(collection(db,"players"),snapshot=>{
+      players=snapshot.docs.map(d=>({uid:d.id,...d.data(),investments:safeInvestments(d.data().investments)}));
+      myProfile=players.find(p=>p.uid===user.uid)||null;
+      renderAll();
+    },err=>showMessage("appMessage","Chyba při načítání hráčů: "+friendlyError(err),"error"));
+  }catch(err){
+    showMessage("appMessage",friendlyError(err),"error");
   }
+});
 
-  document.getElementById("adminMessage").textContent =
-    "Ukázkově přiděleno " + amount + " bodů hráči " + playerName +
-    (reason ? ". Poznámka: " + reason : ".") +
-    " Změna je pouze dočasná a po obnovení stránky zmizí.";
+function renderAll(){
+  if(!currentUser)return;
+  if(!isAdmin&&!myProfile)return;
+  const me=myProfile||{nickname:"Administrátor",pointsAwarded:0,investments:emptyInvestments()};
+  const invested=sumInvestments(me.investments),balance=available(me);
+  $("welcomeTitle").textContent="Vítej, "+(me.nickname||"kovboji")+"!";
+  $("availablePoints").textContent=balance;
+  $("totalInvested").textContent=invested;
+  const sorted=[...players].sort((a,b)=>sumInvestments(b.investments)-sumInvestments(a.investments));
+  const rank=sorted.findIndex(p=>p.uid===currentUser.uid);
+  $("overallRank").textContent=rank<0||invested===0?"—":"#"+(rank+1);
+  $("categoryGrid").innerHTML=categories.map((c,i)=>{
+    const mine=Number(me.investments?.[c.id]||0);
+    const leader=Math.max(0,...players.map(p=>Number(p.investments?.[c.id]||0)));
+    return `<article class="paper category"><div class="number">Kategorie 0${i+1}</div><h3>${esc(c.name)}</h3><p class="description">${esc(c.description)}</p>
+      <div class="category-stats"><div class="category-stat"><span>Moje investice</span><strong>${mine}</strong></div><div class="category-stat"><span>Nejvyšší investice*</span><strong>${leader}</strong></div></div>
+      ${!isAdmin?`<form class="invest-form" data-category="${c.id}"><label for="amount-${c.id}">Kolik bodů investuješ?</label><div class="invest-row"><input id="amount-${c.id}" name="amount" type="number" min="1" max="${Math.max(0,balance)}" step="1" placeholder="Počet bodů" required ${balance<1?"disabled":""}><button class="btn" type="submit" ${balance<1?"disabled":""}>Investovat</button></div></form>`:`<div class="my-investment">Administrátorský náhled</div>`}
+      <div class="my-investment">${mine>0?"Do této kategorie už máš vloženo "+mine+" bodů.":"Zatím jsi do této kategorie nic nevložil."}</div></article>`;
+  }).join("");
+  $("categoryGrid").querySelectorAll(".invest-form").forEach(form=>form.addEventListener("submit",invest));
+  $("leaderboardBody").innerHTML=sorted.map((p,i)=>`<tr><td>${i+1}.</td><td>${esc(p.nickname||"Neznámý hráč")}${p.uid===currentUser.uid?" (ty)":""}</td><td><strong>${sumInvestments(p.investments)}</strong></td><td>${available(p)}</td></tr>`).join("");
+  if(isAdmin){
+    const opts=players.slice().sort((a,b)=>(a.nickname||"").localeCompare(b.nickname||"","cs")).map(p=>`<option value="${esc(p.uid)}">${esc(p.nickname||p.uid)}</option>`).join("");
+    $("awardPlayer").innerHTML=opts;$("correctPlayer").innerHTML=opts;
+    $("adminSummary").textContent=`Přihlášen jako administrátor. Profily v databázi: ${players.length}.`;
+  }
+}
+async function invest(event){
+  event.preventDefault();
+  const form=event.currentTarget,categoryId=form.dataset.category,amount=Number(form.elements.amount.value);
+  if(busy)return;
+  if(!Number.isSafeInteger(amount)||amount<1){alert("Zadej kladný počet celých bodů.");return;}
+  const category=categories.find(c=>c.id===categoryId);
+  if(!confirm(`Opravdu chceš investovat ${amount} bodů do kategorie „${category.name}“?\n\nInvestici už nebudeš moci sám vrátit.`))return;
+  busy=true;setBusy(form,true);
+  try{
+    const ref=doc(db,"players",currentUser.uid);
+    await runTransaction(db,async tx=>{
+      const snap=await tx.get(ref);
+      if(!snap.exists())throw new Error("Hráčský profil neexistuje.");
+      const data=snap.data(),inv=safeInvestments(data.investments);
+      const spent=sumInvestments(inv),points=Number(data.pointsAwarded||0);
+      if(amount>points-spent)throw new Error("Nemáš dostatek dostupných bodů.");
+      inv[categoryId]+=amount;
+      tx.update(ref,{investments:inv});
+    });
+    showMessage("appMessage",`Investice ${amount} bodů do kategorie „${category.name}“ byla uložena.`,"success");
+    $("appMessage").classList.remove("hidden");
+  }catch(err){alert(friendlyError(err));}
+  finally{busy=false;renderAll();}
+}
 
-  populateAdminPlayers();
+$("createPlayerForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!isAdmin)return;
+  const form=e.currentTarget;setBusy(form,true);
+  const uid=$("newPlayerUid").value.trim(),nickname=$("newPlayerNickname").value.trim(),points=Number($("newPlayerPoints").value);
+  try{
+    if(!uid||!nickname||!Number.isSafeInteger(points)||points<0)throw new Error("Zkontroluj UID, přezdívku a počet bodů.");
+    const ref=doc(db,"players",uid);
+    if((await getDoc(ref)).exists())throw new Error("Profil s tímto UID už existuje.");
+    await setDoc(ref,{nickname,pointsAwarded:points,investments:emptyInvestments(),createdAt:serverTimestamp()});
+    showMessage("adminMessage",`Profil hráče ${nickname} byl vytvořen.`,"success");form.reset();$("newPlayerPoints").value="0";
+  }catch(err){showMessage("adminMessage",friendlyError(err),"error");}
+  finally{setBusy(form,false);}
+});
+$("awardForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!isAdmin)return;
+  const form=e.currentTarget;setBusy(form,true);
+  const uid=$("awardPlayer").value,amount=Number($("awardAmount").value),reason=$("awardReason").value.trim();
+  try{
+    if(!uid||!Number.isSafeInteger(amount)||amount<1)throw new Error("Vyber hráče a zadej kladný počet bodů.");
+    await runTransaction(db,async tx=>{
+      const ref=doc(db,"players",uid),snap=await tx.get(ref);
+      if(!snap.exists())throw new Error("Profil hráče neexistuje.");
+      tx.update(ref,{pointsAwarded:Number(snap.data().pointsAwarded||0)+amount});
+    });
+    const p=players.find(p=>p.uid===uid);
+    showMessage("adminMessage",`Přiděleno ${amount} bodů hráči ${p?.nickname||uid}.${reason?" Poznámka: "+reason:""}`,"success");
+    $("awardReason").value="";
+  }catch(err){showMessage("adminMessage",friendlyError(err),"error");}
+  finally{setBusy(form,false);}
+});
+$("correctForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!isAdmin)return;
+  const form=e.currentTarget;setBusy(form,true);
+  const uid=$("correctPlayer").value,categoryId=$("correctCategory").value,amount=Number($("correctAmount").value);
+  try{
+    if(!uid||!Number.isSafeInteger(amount)||amount<0)throw new Error("Zadej platnou nezápornou hodnotu.");
+    await runTransaction(db,async tx=>{
+      const ref=doc(db,"players",uid),snap=await tx.get(ref);
+      if(!snap.exists())throw new Error("Profil hráče neexistuje.");
+      const data=snap.data(),inv=safeInvestments(data.investments);inv[categoryId]=amount;
+      if(sumInvestments(inv)>Number(data.pointsAwarded||0))throw new Error("Oprava by způsobila, že hráč investoval více bodů, než má přiděleno.");
+      tx.update(ref,{investments:inv});
+    });
+    showMessage("adminMessage","Investice byla opravena.","success");
+  }catch(err){showMessage("adminMessage",friendlyError(err),"error");}
+  finally{setBusy(form,false);}
 });
 </script>
 </body>
