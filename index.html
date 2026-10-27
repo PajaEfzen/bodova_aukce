@@ -258,7 +258,7 @@ onAuthStateChanged(auth,async user=>{
   $("loginScreen").classList.add("hidden");$("dashboard").classList.remove("hidden");
   $("adminPanel").classList.toggle("hidden",!isAdmin);
   $("welcomeEyebrow").textContent=isAdmin?"Kancelář šerifa":"Účastník aukce";
-  $("welcomeSubtitle").textContent=isAdmin?"Spravuješ body, hráče a investice celé aukce.":"Tvoje body jsou tvoje munice. Používej je s rozvahou.";
+  $("welcomeSubtitle").textContent=isAdmin?"Spravuješ body, hráče a investice celé aukce.":"ŽÁDNÉ BODY PO INVESTOVÁNÍ NELZE VRÁTIT! Tvoje body jsou tvoje munice. Používej je s rozvahou.";
   $("welcomeTitle").textContent="Vítej, "+($("nickname").value.trim()||"kovboji")+"!";
   try{
     if(!isAdmin){
