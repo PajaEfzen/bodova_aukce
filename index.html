@@ -547,4 +547,387 @@ footer {
           Tvoje body jsou tvoje munice. Používej je s rozvahou.
         </p>
       </div>
-      <button class="btn btn-secondary"
+      <button class="btn btn-secondary" id="logoutButton">← Odhlásit</button>
+    </div>
+
+    <div class="balance-grid">
+      <div class="stat">
+        <div class="label">Dostupné body</div>
+        <div class="value" id="availablePoints">120</div>
+        <div class="suffix">bodů k dispozici</div>
+      </div>
+      <div class="stat">
+        <div class="label">Investováno celkem</div>
+        <div class="value" id="totalInvested">0</div>
+        <div class="suffix">bodů v kategoriích</div>
+      </div>
+      <div class="stat">
+        <div class="label">Moje pořadí</div>
+        <div class="value" id="overallRank">—</div>
+        <div class="suffix">v ukázkových datech</div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">Vyber svou kořist</div>
+        <h2>Kategorie aukce</h2>
+      </div>
+      <p>Investice jsou nevratné.</p>
+    </div>
+
+    <div class="category-grid" id="categoryGrid"></div>
+
+    <div class="section-heading">
+      <div>
+        <div class="eyebrow">Kdo vede přestřelku?</div>
+        <h2>Průběžné pořadí</h2>
+      </div>
+    </div>
+
+    <div class="leaderboard">
+      <div class="leaderboard-head">
+        <h3 id="leaderboardTitle">Tvoje pozice</h3>
+        <p>Ukázková tabulka. Skutečné pořadí se načte po napojení databáze.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pořadí</th>
+              <th>Kovboj</th>
+              <th>Investováno</th>
+              <th>Dostupné body</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- UKÁZKOVÉ ADMIN FUNKCE -->
+    <section id="adminPanel" class="admin-tools hidden">
+      <div class="eyebrow">Kancelář šerifa</div>
+      <h2>Administrace aukce</h2>
+      <p>
+        V této ukázce můžeš vyzkoušet přidělování bodů.
+        Později sem přidáme správu hráčů, úpravy chybných investic,
+        názvy kategorií, ceny a uzavření aukce.
+      </p>
+
+      <form id="adminForm" class="admin-form">
+        <div>
+          <label for="adminPlayer">Hráč</label>
+          <select id="adminPlayer"></select>
+        </div>
+        <div>
+          <label for="adminAmount">Počet bodů</label>
+          <input id="adminAmount" type="number" min="1" step="1" value="10" required>
+        </div>
+        <div>
+          <label for="adminReason">Poznámka</label>
+          <input id="adminReason" type="text" placeholder="Např. splněný úkol">
+        </div>
+        <button class="btn" type="submit">Přidělit body</button>
+      </form>
+
+      <div id="adminMessage" class="notice">
+        Jde pouze o místní ukázku. Změny se do databáze neukládají.
+      </div>
+    </section>
+
+    <div class="demo-warning">
+      POZOR: Toto je pouze interaktivní prototyp. Údaje jsou dočasné,
+      nejsou sdílené s ostatními hráči a po obnovení stránky se resetují.
+      Nepoužívej zde skutečné přístupové kódy.
+    </div>
+  </section>
+
+  <footer>PRAIRIE AUCTION · THE FRONTIER AWAITS</footer>
+</main>
+
+<script>
+const categories = [
+  {
+    id: "gear",
+    name: "Výbava kovboje",
+    description: "Vybavení, které by nemělo chybět žádnému dobrodruhovi.",
+    invested: 0,
+    leader: 85
+  },
+  {
+    id: "treasure",
+    name: "Zlatý poklad",
+    description: "Cennosti a poklady pro ty, kdo mají dobrý odhad.",
+    invested: 0,
+    leader: 110
+  },
+  {
+    id: "saloon",
+    name: "Saloon & pohoda",
+    description: "Odměny pro chvíle, kdy je čas složit ostruhy.",
+    invested: 0,
+    leader: 60
+  },
+  {
+    id: "mystery",
+    name: "Tajemná bedna",
+    description: "Nikdo neví, co se uvnitř skrývá. O to je to zajímavější.",
+    invested: 0,
+    leader: 95
+  }
+];
+
+let currentUser = null;
+let isAdmin = false;
+let balance = 120;
+let investments = {};
+let demoPlayers = [
+  { name: "Dusty Pete", invested: 150, balance: 30 },
+  { name: "Calamity Jane", invested: 125, balance: 45 },
+  { name: "Billy the Kid", invested: 90, balance: 80 }
+];
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+document.getElementById("loginForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const nickname = document.getElementById("nickname").value.trim();
+  const code = document.getElementById("accessCode").value;
+  isAdmin = document.getElementById("role").value === "admin";
+
+  if (!nickname || !code) return;
+
+  // Pouze demonstrace: kód se neověřuje.
+  currentUser = nickname;
+  balance = 120;
+  investments = {};
+
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("welcomeTitle").textContent = "Zdravím tě, " + nickname + "!";
+  document.getElementById("welcomeEyebrow").textContent =
+    isAdmin ? "Kancelář šerifa · Ukázkový režim" : "Účastník aukce · Ukázkový režim";
+
+  document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
+
+  renderCategories();
+  renderStats();
+  renderLeaderboard();
+  populateAdminPlayers();
+
+  window.scrollTo(0, 0);
+});
+
+document.getElementById("logoutButton").addEventListener("click", function() {
+  currentUser = null;
+  isAdmin = false;
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
+  document.getElementById("accessCode").value = "";
+  window.scrollTo(0, 0);
+});
+
+function renderCategories() {
+  const grid = document.getElementById("categoryGrid");
+  grid.innerHTML = categories.map(function(category, index) {
+    const myInvestment = investments[category.id] || 0;
+    return `
+      <article class="paper category">
+        <div class="number">Kategorie 0${index + 1}</div>
+        <h3>${escapeHTML(category.name)}</h3>
+        <p class="description">${escapeHTML(category.description)}</p>
+
+        <div class="category-stats">
+          <div class="category-stat">
+            <span>Moje investice</span>
+            <strong>${myInvestment}</strong>
+          </div>
+          <div class="category-stat">
+            <span>Nejvyšší investice*</span>
+            <strong>${Math.max(category.leader, myInvestment)}</strong>
+          </div>
+        </div>
+
+        ${!isAdmin ? `
+          <form class="invest-form" data-category="${category.id}">
+            <label for="amount-${category.id}">Kolik bodů investuješ?</label>
+            <div class="invest-row">
+              <input id="amount-${category.id}" name="amount" type="number"
+                min="1" max="${balance}" step="1" placeholder="Počet bodů" required>
+              <button class="btn" type="submit">Investovat</button>
+            </div>
+          </form>
+        ` : `
+          <div class="my-investment">Administrátorský náhled</div>
+        `}
+
+        <div class="my-investment">
+          ${myInvestment > 0
+            ? "Do této kategorie už máš vloženo " + myInvestment + " bodů."
+            : "Zatím jsi do této kategorie nic nevložil."}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  grid.querySelectorAll(".invest-form").forEach(function(form) {
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const categoryId = form.dataset.category;
+      const amount = Number(form.elements.amount.value);
+
+      if (!Number.isInteger(amount) || amount < 1) {
+        alert("Zadej kladný počet celých bodů.");
+        return;
+      }
+
+      if (amount > balance) {
+        alert("Nemáš dostatek dostupných bodů.");
+        return;
+      }
+
+      const category = categories.find(function(item) {
+        return item.id === categoryId;
+      });
+
+      if (!category) return;
+
+      const confirmed = confirm(
+        "Opravdu chceš investovat " + amount + " bodů do kategorie „" +
+        category.name + "“?\n\nTuto investici už v této ukázce nepůjde vrátit."
+      );
+
+      if (!confirmed) return;
+
+      balance -= amount;
+      investments[categoryId] = (investments[categoryId] || 0) + amount;
+
+      renderCategories();
+      renderStats();
+      renderLeaderboard();
+    });
+  });
+}
+
+function renderStats() {
+  const invested = Object.values(investments).reduce(function(sum, value) {
+    return sum + value;
+  }, 0);
+
+  document.getElementById("availablePoints").textContent = balance;
+  document.getElementById("totalInvested").textContent = invested;
+
+  const players = demoPlayers.concat([{
+    name: currentUser,
+    invested: invested,
+    balance: balance
+  }]);
+
+  players.sort(function(a, b) {
+    return b.invested - a.invested;
+  });
+
+  const rank = players.findIndex(function(player) {
+    return player.name === currentUser;
+  }) + 1;
+
+  document.getElementById("overallRank").textContent =
+    invested === 0 ? "—" : "#" + rank;
+}
+
+function renderLeaderboard() {
+  const invested = Object.values(investments).reduce(function(sum, value) {
+    return sum + value;
+  }, 0);
+
+  const players = demoPlayers.concat([{
+    name: currentUser,
+    invested: invested,
+    balance: balance
+  }]);
+
+  players.sort(function(a, b) {
+    return b.invested - a.invested;
+  });
+
+  document.getElementById("leaderboardBody").innerHTML =
+    players.map(function(player, index) {
+      const isMe = player.name === currentUser;
+      return `
+        <tr>
+          <td>${index + 1}.</td>
+          <td>${escapeHTML(player.name)}${isMe ? " (ty)" : ""}</td>
+          <td><strong>${player.invested}</strong></td>
+          <td>${player.balance}</td>
+        </tr>
+      `;
+    }).join("");
+}
+
+function populateAdminPlayers() {
+  const select = document.getElementById("adminPlayer");
+  const players = demoPlayers.concat([{
+    name: currentUser,
+    invested: Object.values(investments).reduce(function(sum, value) {
+      return sum + value;
+    }, 0),
+    balance: balance
+  }]);
+
+  select.innerHTML = players.map(function(player) {
+    return '<option value="' + escapeHTML(player.name) + '">' +
+      escapeHTML(player.name) + '</option>';
+  }).join("");
+}
+
+document.getElementById("adminForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  if (!isAdmin) return;
+
+  const playerName = document.getElementById("adminPlayer").value;
+  const amount = Number(document.getElementById("adminAmount").value);
+  const reason = document.getElementById("adminReason").value.trim();
+
+  if (!Number.isInteger(amount) || amount < 1) {
+    alert("Zadej kladný počet celých bodů.");
+    return;
+  }
+
+  if (playerName === currentUser) {
+    balance += amount;
+    renderStats();
+    renderCategories();
+    renderLeaderboard();
+  } else {
+    const player = demoPlayers.find(function(item) {
+      return item.name === playerName;
+    });
+
+    if (player) {
+      player.balance += amount;
+    }
+  }
+
+  document.getElementById("adminMessage").textContent =
+    "Ukázkově přiděleno " + amount + " bodů hráči " + playerName +
+    (reason ? ". Poznámka: " + reason : ".") +
+    " Změna je pouze dočasná a po obnovení stránky zmizí.";
+
+  populateAdminPlayers();
+});
+</script>
+</body>
+</html>
