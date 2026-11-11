@@ -210,10 +210,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const categories = [
+  {id:"mystery",name:"Mix",description:"Směs zajímavých cen - věci do normálního života, arty, kupón, knížky, mystery boxy..."},
   {id:"gear",name:"Deskovky a hry",description:"Malé i velké deskové hry a kostky."},
   {id:"treasure",name:"Alkohol",description:"Různé tvrdé alkoholy, medoviny a fancy piva. Dokonce i pár medů."},
   {id:"saloon",name:"Larp",description:"Vybavení na larp, kožené výrobky, fakesteel voucher nebo třeba stan."},
-  {id:"mystery",name:"Mix",description:"Směs zajímavých cen - věci do normálního života, arty, kupón, knížky, mystery boxy..."},
   {id:"mtg",name:"MtG věci",description:"Magic: The Gathering – (loot)boxy, podložky a další herní věci."}
 ];
 const emptyInvestments = () => ({
