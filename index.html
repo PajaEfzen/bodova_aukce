@@ -155,8 +155,15 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
           <p>Zadej novou celkovou hodnotu investice hráče v dané kategorii. Tato funkce je určena pouze pro opravy organizátorem.</p>
           <form id="correctForm">
             <label for="correctPlayer">Hráč</label><select id="correctPlayer" required></select>
-            <label for="correctCategory">Kategorie</label><select id="correctCategory"><option value="gear">Výbava kovboje</option><option value="treasure">Zlatý poklad</option><option value="saloon">Saloon & pohoda</option><option value="mystery">Tajemná bedna</option></select>
-            <label for="correctAmount">Nová celková investice</label><input id="correctAmount" type="number" min="0" step="1" required value="0">
+			<label for="correctCategory">Kategorie</label>
+				<select id="correctCategory">
+				  <option value="gear">Deskovky a hry</option>
+				  <option value="treasure">Alkohol</option>
+				  <option value="saloon">Larp</option>
+				  <option value="mystery">Mix</option>
+				  <option value="mtg">MtG věci</option>
+				</select>
+			  <label for="correctAmount">Nová celková investice</label><input id="correctAmount" type="number" min="0" step="1" required value="0">
             <button class="btn" type="submit">Opravit investici</button>
           </form>
         </div>
@@ -203,12 +210,19 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const categories = [
-  {id:"gear",name:"Deskovky",description:"Tady: Výpis deskovek a MtG kokotinek"},
-  {id:"treasure",name:"Alkohol",description:"Tady: Seznam flašek co máme."},
-  {id:"saloon",name:"Larp",description:"Tady: Seznam cen z oblasti larpu."},
-  {id:"mystery",name:"Ostatní",description:"Tady: Seznam cen co tam budou."}
+  {id:"gear",name:"Deskovky a hry",description:"Malé i velké deskové hry a kostky."},
+  {id:"treasure",name:"Alkohol",description:"Různé tvrdé alkoholy, medoviny a fancy piva. Dokonce i pár medů."},
+  {id:"saloon",name:"Larp",description:"Vybavení na larp, kožené výrobky, fakesteel voucher nebo třeba stan."},
+  {id:"mystery",name:"Mix",description:"Směs zajímavých cen - věci do normálního života, arty, kupón, knížky, mystery boxy..."},
+  {id:"mtg",name:"MtG věci",description:"Magic: The Gathering – (loot)boxy, podložky a další herní věci."}
 ];
-const emptyInvestments = () => ({gear:0,treasure:0,saloon:0,mystery:0});
+const emptyInvestments = () => ({
+  gear: 0,
+  treasure: 0,
+  saloon: 0,
+  mystery: 0,
+  mtg: 0
+});
 let currentUser = null;
 let isAdmin = false;
 let myProfile = null;
@@ -227,8 +241,17 @@ function nicknameToEmail(nickname){
   return normalized+"@auction.invalid";
 }
 function setBusy(form,value){form.querySelectorAll("button").forEach(b=>b.disabled=value);}
-function safeInvestments(data){const src=data||{};return {gear:Number(src.gear||0),treasure:Number(src.treasure||0),saloon:Number(src.saloon||0),mystery:Number(src.mystery||0)};}
+function safeInvestments(data) {
+  const src = data || {};
 
+  return {
+    gear: Number(src.gear || 0),
+    treasure: Number(src.treasure || 0),
+    saloon: Number(src.saloon || 0),
+    mystery: Number(src.mystery || 0),
+    mtg: Number(src.mtg || 0)
+  };
+}
 $("loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const form=e.currentTarget;setBusy(form,true);showMessage("loginMessage","Přihlašuji…");
