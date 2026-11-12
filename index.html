@@ -128,7 +128,45 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
     <div class="category-grid" id="categoryGrid"></div>
     <div class="section-heading"><div><div class="eyebrow">Kdo vede celkem?</div><h2>Průběžné celkové pořadí</h2></div></div>
     <div class="leaderboard"><div class="leaderboard-head"><h3>Tvoje pozice</h3><p>Pořadí se průběžně aktualizuje podle uložených investic.</p></div><div class="table-wrap"><table><thead><tr><th>Pořadí</th><th>Kovboj</th><th>Investováno</th><th>Dostupné body</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div>
-    <section id="adminPanel" class="admin-tools hidden">
+    
+<section id="riddleSection" class="leaderboard" style="margin-top:28px;">
+  <div class="leaderboard-head">
+    <div class="eyebrow">Výzva šerifa</div>
+    <h2>Šerifovy hádanky</h2>
+    <p id="riddleStatus">Načítám aktuální stav výzvy…</p>
+  </div>
+
+  <div id="riddleContent" style="padding:20px;">
+    <p id="riddleMessage" class="status">
+      Připravuji hádanku…
+    </p>
+
+    <div id="riddleQuestion" class="hidden">
+      <h3 id="riddleTitle"></h3>
+      <p id="riddleText" style="line-height:1.8;"></p>
+
+      <form id="riddleForm">
+        <label for="riddleAnswer">Tvoje odpověď</label>
+        <input
+          id="riddleAnswer"
+          type="text"
+          maxlength="500"
+          placeholder="Napiš svou odpověď…"
+          required
+        >
+        <button class="btn" type="submit" style="margin-top:14px;">
+          ODESLAT ODPOVĚĎ
+        </button>
+      </form>
+
+      <div id="riddleFeedback" class="notice hidden"></div>
+    </div>
+
+    <div id="riddleCountdown" class="status" style="margin-top:15px;"></div>
+  </div>
+</section>
+
+	  <section id="adminPanel" class="admin-tools hidden">
       <div class="eyebrow">Kancelář šerifa</div><h2>Administrace aukce</h2>
       <p>Účty se vytvářejí předem ve Firebase Authentication. Zde k nim přiřadíš profil a můžeš přidělovat body nebo opravovat investice. UID účtu najdeš ve Firebase Console → Authentication → Users.</p>
       <div class="admin-grid">
