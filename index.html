@@ -75,6 +75,37 @@ table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}th,td{p
 .admin-box{border:1px solid var(--border);padding:18px;background:rgba(0,0,0,.12)}.admin-box h3{color:var(--gold-light)}.admin-box .btn{margin-top:14px}.inline-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-top:55px}.status{font-size:12px;color:var(--muted);line-height:1.7}
 @media(max-width:720px){.login-layout{grid-template-columns:1fr;gap:20px}.poster{padding:15px}.poster .wanted{font-size:45px}.balance-grid{grid-template-columns:1fr;gap:10px}.stat{padding:16px}.stat .value{font-size:31px}.category-grid{grid-template-columns:1fr}.dashboard-header{flex-direction:column}.admin-form,.admin-grid,.inline-fields{grid-template-columns:1fr}.topbar{padding:15px}.brand{font-size:20px}main{padding-top:25px}.login-card{padding:22px}}
+/* Šerifovy hádanky */
+.riddle-panel {
+  border: 1px solid var(--gold);
+  background: linear-gradient(145deg, #443023, #2b1d14);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+
+.riddle-panel .leaderboard-head {
+  border-bottom: 1px solid var(--gold);
+}
+
+.riddle-panel .eyebrow {
+  color: var(--gold-light);
+}
+
+.riddle-question-box {
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.18);
+  padding: 22px;
+  margin-top: 18px;
+}
+
+#riddleText {
+  color: var(--paper);
+  font-size: 15px;
+}
+
+#riddleCountdown {
+  color: var(--gold-light);
+  margin-top: 18px;
+}
 </style>
 </head>
 <body>
@@ -129,8 +160,8 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
     <div class="section-heading"><div><div class="eyebrow">Kdo vede celkem?</div><h2>Průběžné celkové pořadí</h2></div></div>
     <div class="leaderboard"><div class="leaderboard-head"><h3>Tvoje pozice</h3><p>Pořadí se průběžně aktualizuje podle uložených investic.</p></div><div class="table-wrap"><table><thead><tr><th>Pořadí</th><th>Kovboj</th><th>Investováno</th><th>Dostupné body</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div>
     
-<section id="riddleSection" class="leaderboard" style="margin-top:28px;">
-  <div class="leaderboard-head">
+<section id="riddleSection" class="leaderboard riddle-panel" style="margin-top:28px;">
+	<div class="leaderboard-head">
     <div class="eyebrow">Výzva šerifa</div>
     <h2>Šerifovy hádanky</h2>
     <p id="riddleStatus">Načítám aktuální stav výzvy…</p>
@@ -141,7 +172,7 @@ footer{text-align:center;color:#80684d;font-size:10px;letter-spacing:2px;margin-
       Připravuji hádanku…
     </p>
 
-    <div id="riddleQuestion" class="hidden">
+    <div id="riddleQuestion" class="hidden riddle-question-box">
       <h3 id="riddleTitle"></h3>
       <p id="riddleText" style="line-height:1.8;"></p>
 
@@ -316,31 +347,9 @@ onAuthStateChanged(auth,async user=>{
   currentUser=user;myProfile=null;players=[];
   if(!user){isAdmin=false;$("dashboard").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("accessCode").value="";return;}
   isAdmin=user.uid===ADMIN_UID;
-  
-    // TEST: ověření přihlášení přes Cloudflare Worker
-    try {
-      const token = await user.getIdToken();
-
-      const response = await fetch(
-        "https://western-auction-api.kalliphon.workers.dev/auth-check",
-        {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({})
-        }
-      );
-
-      const result = await response.json();
-      console.log("WESTERN AUCTION AUTH TEST:", result);
-
-    } catch (error) {
-      console.error("AUTH TEST FAILED:", error);
-    }
 
   $("loginScreen").classList.add("hidden");$("dashboard").classList.remove("hidden");
+	loadCurrentRiddle();
   $("adminPanel").classList.toggle("hidden",!isAdmin);
   $("welcomeEyebrow").textContent=isAdmin?"Kancelář šerifa":"Účastník aukce";
   $("welcomeSubtitle").textContent=isAdmin?"Spravuješ body, hráče a investice celé aukce.":"ŽÁDNÉ BODY PO INVESTOVÁNÍ NELZE VRÁTIT! Tvoje body jsou tvoje munice. Používej je s rozvahou.";
@@ -472,6 +481,186 @@ function renderCategoryRankings() {
     `;
   }).join("");
 }
+
+
+let riddleCountdownTimer = null;
+
+async function loadCurrentRiddle() {
+  const endpoint =
+    "https://western-auction-api.kalliphon.workers.dev/riddle/current";
+
+  try {
+    const token = await currentUser.getIdToken();
+
+const response = await fetch(endpoint, {
+  headers: {
+    "Authorization": "Bearer " + token
+  }
+});
+
+const data = await response.json();
+
+    $("riddleQuestion").classList.add("hidden");
+    $("riddleForm").classList.add("hidden");
+
+    if (!data.ok) {
+      $("riddleStatus").textContent = "Nepodařilo se načíst výzvu.";
+      $("riddleMessage").textContent =
+        "Při načítání hádanky nastala chyba.";
+      return;
+    }
+
+    if (riddleCountdownTimer) {
+      clearInterval(riddleCountdownTimer);
+      riddleCountdownTimer = null;
+    }
+
+    if (data.state === "waiting") {
+      $("riddleStatus").textContent = "Výzva zatím nezačala.";
+      $("riddleMessage").textContent =
+        "Šerif právě připravuje první hádanku.";
+      startRiddleCountdown(data.nextRiddleAt);
+      return;
+    }
+
+    if (data.state === "finished") {
+      $("riddleStatus").textContent = "Výzva skončila.";
+      $("riddleMessage").textContent =
+        "Všech deset hádanek už bylo odhaleno. Díky za účast!";
+      $("riddleCountdown").textContent = "";
+      return;
+    }
+
+    if (data.state === "active") {
+      $("riddleStatus").textContent =
+        "Hádanka číslo " + data.index + " z 10";
+	 $("riddleAnswer").value = "";
+$("riddleAnswer").disabled = Boolean(data.completed);
+
+if (data.completed) {
+  showMessage(
+    "riddleFeedback",
+    "Tuto hádanku už máš vyřešenou.",
+    "success"
+  );
+} else {
+  $("riddleFeedback").classList.add("hidden");
+  $("riddleFeedback").textContent = "";
+}
+
+      $("riddleMessage").textContent = "";
+      $("riddleTitle").textContent =
+        data.riddle.title || "Šerifova hádanka";
+
+      $("riddleText").textContent = data.riddle.text;
+
+      $("riddleQuestion").classList.remove("hidden");
+	  $("riddleForm").classList.remove("hidden");
+
+      startRiddleCountdown(data.endsAt);
+    }
+
+  } catch (error) {
+    console.error("RIDDLE LOAD ERROR:", error);
+    $("riddleStatus").textContent =
+      "Spojení se serverem se nezdařilo.";
+    $("riddleMessage").textContent =
+      "Zkus obnovit stránku.";
+  }
+}
+
+function startRiddleCountdown(targetTime) {
+  const target = new Date(targetTime).getTime();
+
+  function updateCountdown() {
+    const remaining = Math.max(0, target - Date.now());
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    $("riddleCountdown").textContent =
+      remaining > 0
+        ? "Další hádanka za: " +
+          String(hours).padStart(2, "0") + ":" +
+          String(minutes).padStart(2, "0") + ":" +
+          String(seconds).padStart(2, "0")
+        : "Načítám další hádanku…";
+
+    if (remaining <= 0) {
+      clearInterval(riddleCountdownTimer);
+      riddleCountdownTimer = setTimeout(
+        loadCurrentRiddle,
+        1000
+      );
+    }
+  }
+
+  updateCountdown();
+  riddleCountdownTimer = setInterval(updateCountdown, 1000);
+}
+
+$("riddleForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const answer = $("riddleAnswer").value.trim();
+  if (!answer) return;
+
+  const form = event.currentTarget;
+  setBusy(form, true);
+  $("riddleFeedback").classList.remove("hidden");
+  showMessage("riddleFeedback", "Ověřuji odpověď…");
+
+  try {
+    const token = await currentUser.getIdToken();
+
+    const response = await fetch(
+      "https://western-auction-api.kalliphon.workers.dev/riddle/submit",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ answer })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Odeslání odpovědi se nezdařilo.");
+    }
+
+    if (result.correct) {
+      $("riddleAnswer").disabled = true;
+
+      const message = result.alreadyCompleted
+        ? "Tuto hádanku už máš vyřešenou."
+        : "Správně! Získáváš " + result.reward + " bodů!";
+
+      showMessage("riddleFeedback", message, "success");
+    } else {
+      showMessage(
+        "riddleFeedback",
+        "To není správná odpověď. Zkus to znovu.",
+        "error"
+      );
+
+      $("riddleAnswer").value = "";
+    }
+
+  } catch (error) {
+    showMessage(
+      "riddleFeedback",
+      "Chyba: " + error.message,
+      "error"
+    );
+  } finally {
+    setBusy(form, false);
+  }
+});
 
 async function invest(event){
   event.preventDefault();
