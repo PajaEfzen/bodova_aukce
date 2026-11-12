@@ -278,6 +278,30 @@ onAuthStateChanged(auth,async user=>{
   currentUser=user;myProfile=null;players=[];
   if(!user){isAdmin=false;$("dashboard").classList.add("hidden");$("loginScreen").classList.remove("hidden");$("accessCode").value="";return;}
   isAdmin=user.uid===ADMIN_UID;
+  
+    // TEST: ověření přihlášení přes Cloudflare Worker
+    try {
+      const token = await user.getIdToken();
+
+      const response = await fetch(
+        "https://western-auction-api.kalliphon.workers.dev/auth-check",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({})
+        }
+      );
+
+      const result = await response.json();
+      console.log("WESTERN AUCTION AUTH TEST:", result);
+
+    } catch (error) {
+      console.error("AUTH TEST FAILED:", error);
+    }
+
   $("loginScreen").classList.add("hidden");$("dashboard").classList.remove("hidden");
   $("adminPanel").classList.toggle("hidden",!isAdmin);
   $("welcomeEyebrow").textContent=isAdmin?"Kancelář šerifa":"Účastník aukce";
